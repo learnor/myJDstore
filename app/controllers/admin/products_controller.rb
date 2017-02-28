@@ -1,6 +1,10 @@
 class Admin::ProductsController < ApplicationController
 
-  before_action :set_product, only: [:show, :create, :edit, :update, :destroy]
+  layout "admin"
+  
+  before_action :set_product, only: [:show,  :edit, :update, :destroy]
+  before_action :authenticate_user!
+  before_action :admin_required
 
   def show
   end
@@ -14,8 +18,9 @@ class Admin::ProductsController < ApplicationController
   end
 
   def create
+    @product = Product.new(product_params)
     if @product.save
-      redirect_to admin_products_path flash[:notice] = "Successfully created a product"
+      redirect_to admin_products_path, notice: "Successfully created a product"
     else
       render :new
     end
@@ -26,7 +31,7 @@ class Admin::ProductsController < ApplicationController
 
   def update
     if @product.update(product_params)
-      redirect_to admin_products_path flash[:notice] = "Successfully updated a product"
+      redirect_to admin_products_path, notice: "Successfully updated a product"
     else
       render :update
     end
@@ -34,13 +39,13 @@ class Admin::ProductsController < ApplicationController
 
   def destroy
     @product.destroy
-    redirect_to admin_products_path flash[:alert] = "Successfully deleted a product"
+    redirect_to admin_products_path, alert: "Successfully deleted a product"
   end
 
 private
 
   def set_product
-    @product = Product.find(parasm[:id])
+    @product = Product.find(params[:id])
   end
 
   def product_params
